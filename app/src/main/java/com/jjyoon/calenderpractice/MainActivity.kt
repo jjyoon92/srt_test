@@ -10,27 +10,36 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    private val REQUEST_DATE_PICKER = 1 // DatePickerActivity 호출을 위한 요청
-    private lateinit var btnOpenCalendar: Button
-    private lateinit var btnOpenCalendarText: String
+    private lateinit var btnDepartureOpenCalendar: Button
+    private lateinit var btnDepartureOpenCalendarText: String
+    private lateinit var btnArrivalOpenCalendar: Button
+    private lateinit var btnArrivalOpenCalendarText: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        btnOpenCalendar = findViewById(R.id.btnOpenCalendar)
+        btnDepartureOpenCalendar = findViewById(R.id.btnOpenDepartureCalendar)
+        btnArrivalOpenCalendar = findViewById(R.id.btnOpenArrivalCalendar)
 
         val currentDate = getCurrentDate()
-        btnOpenCalendarText = currentDate
+        btnDepartureOpenCalendarText = currentDate
+        btnArrivalOpenCalendarText = currentDate
 
-        btnOpenCalendar.setOnClickListener {
-            val datePickerIntent = Intent(this, CalendarActivity::class.java)
-            datePickerActivityResult.launch(datePickerIntent)
+        btnDepartureOpenCalendar.setOnClickListener {
+            val datePickerIntent = Intent(this, DepartureCalendarActivity::class.java)
+            DepartureCalendarActivityResult.launch(datePickerIntent)
+        }
+
+        btnArrivalOpenCalendar.setOnClickListener {
+            val datePickerIntent = Intent(this, ArrivalCalendarActivity::class.java)
+            ArrivalCalendarActivityResult.launch(datePickerIntent)
         }
 
 //        println("출발날짜 : " + btnDatePickerText)
 
-        btnOpenCalendar.setText("출발일 : $btnOpenCalendarText")
+        btnDepartureOpenCalendar.setText("출발일 : $btnDepartureOpenCalendarText")
+        btnArrivalOpenCalendar.setText("도착일 : $btnArrivalOpenCalendarText")
     }
 
     // BtnDatePicker 날짜, 요일, 시간 초기값 반환
@@ -56,20 +65,38 @@ class MainActivity : AppCompatActivity() {
 
 
     // DatePicker
-    private val datePickerActivityResult =
+    private val DepartureCalendarActivityResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
                 val selectedDate = data?.getStringExtra("selectedDate")
                 if (selectedDate != null) {
-                    btnOpenCalendarText = selectedDate
-//                    btnDatePicker.text = "출발일 : $selectedDate"
+                    btnDepartureOpenCalendarText = selectedDate
                     val selectedTime = data?.getIntExtra("selectedTime", 0)
                     if (selectedTime != null) {
                         if (selectedTime < 10) {
-                            btnOpenCalendar.text = "출발일 : $selectedDate 0${selectedTime}시 이후"
+                            btnDepartureOpenCalendar.text = "출발일 : $selectedDate 0${selectedTime}시 이후"
                         } else {
-                            btnOpenCalendar.text = "출발일 : $selectedDate ${selectedTime}시 이후"
+                            btnDepartureOpenCalendar.text = "출발일 : $selectedDate ${selectedTime}시 이후"
+                        }
+                    }
+                }
+            }
+        }
+
+    private val ArrivalCalendarActivityResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                val selectedDate = data?.getStringExtra("selectedDate")
+                if (selectedDate != null) {
+                    btnArrivalOpenCalendarText = selectedDate
+                    val selectedTime = data?.getIntExtra("selectedTime", 0)
+                    if (selectedTime != null) {
+                        if (selectedTime < 10) {
+                            btnArrivalOpenCalendar.text = "도착일 : $selectedDate 0${selectedTime}시 이후"
+                        } else {
+                            btnArrivalOpenCalendar.text = "도착일 : $selectedDate ${selectedTime}시 이후"
                         }
                     }
                 }

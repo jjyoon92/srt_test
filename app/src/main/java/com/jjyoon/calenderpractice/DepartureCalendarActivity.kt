@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jjyoon.calenderpractice.adapters.TimeSelectAdapter
 import java.util.*
 
-class CalendarActivity : AppCompatActivity(), TimeSelectAdapter.OnTimeClickListener {
+class DepartureCalendarActivity : AppCompatActivity(), TimeSelectAdapter.OnTimeClickListener {
 
     private lateinit var timeSelectAdapter: RecyclerView.Adapter<*>
     private lateinit var selectedDate: String
@@ -20,7 +20,7 @@ class CalendarActivity : AppCompatActivity(), TimeSelectAdapter.OnTimeClickListe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_calendar)
+        setContentView(R.layout.activity_departure_calendar)
 
         val calendarView: CalendarView = findViewById(R.id.calendarView)
         val btnGet: Button = findViewById(R.id.btnDateSelect)
