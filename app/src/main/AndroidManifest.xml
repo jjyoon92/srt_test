@@ -19,6 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".StationSelectActivity"/>
         <activity android:name=".DepartureCalendarActivity"/>
         <activity android:name=".ArrivalCalendarActivity"/>
     </application>

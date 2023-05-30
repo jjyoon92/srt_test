@@ -15,6 +15,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnDepartureOpenCalendarText: String
     private lateinit var btnArrivalOpenCalendar: Button
     private lateinit var btnArrivalOpenCalendarText: String
+    private lateinit var btnDepartureStationSelect: Button
+    private lateinit var btnDepartureStationSelectText: String
+    private lateinit var btnArrivalStationSelect: Button
+    private lateinit var btnArrivalStationSelectText: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,24 +27,47 @@ class MainActivity : AppCompatActivity() {
         btnDepartureOpenCalendar = findViewById(R.id.btnOpenDepartureCalendar)
         btnArrivalOpenCalendar = findViewById(R.id.btnOpenArrivalCalendar)
 
+        btnDepartureStationSelect = findViewById(R.id.btnDepartureStationSelect)
+        btnArrivalStationSelect = findViewById(R.id.btnArrivalStationSelect)
+
+        btnDepartureStationSelect.setOnClickListener {
+            val stationSelectIntent = Intent(this, StationSelectActivity::class.java)
+            // 출발 역 선택 플래그 설정 ( 출발역인가 true )
+            stationSelectIntent.putExtra("isDeparture", true)
+            stationSelectActivityResult.launch(stationSelectIntent)
+        }
+
+        btnArrivalStationSelect.setOnClickListener {
+            val stationSelectIntent = Intent(this, StationSelectActivity::class.java)
+            // 도착 역 선택 플래그 설정 ( 출발역인가 false )
+            stationSelectIntent.putExtra("isDeparture", false)
+            stationSelectActivityResult.launch(stationSelectIntent)
+        }
+
+
+
+
         val currentDate = getCurrentDate()
         btnDepartureOpenCalendarText = currentDate
         btnArrivalOpenCalendarText = currentDate
 
         btnDepartureOpenCalendar.setOnClickListener {
-            val datePickerIntent = Intent(this, DepartureCalendarActivity::class.java)
-            DepartureCalendarActivityResult.launch(datePickerIntent)
+            val departureCalendarIntent = Intent(this, DepartureCalendarActivity::class.java)
+            departureCalendarActivityResult.launch(departureCalendarIntent)
         }
 
         btnArrivalOpenCalendar.setOnClickListener {
-            val datePickerIntent = Intent(this, ArrivalCalendarActivity::class.java)
-            ArrivalCalendarActivityResult.launch(datePickerIntent)
+            val arrivalCalendarIntent = Intent(this, ArrivalCalendarActivity::class.java)
+            arrivalCalendarActivityResult.launch(arrivalCalendarIntent)
         }
 
 //        println("출발날짜 : " + btnDatePickerText)
 
-        btnDepartureOpenCalendar.setText("출발일 : $btnDepartureOpenCalendarText")
-        btnArrivalOpenCalendar.setText("도착일 : $btnArrivalOpenCalendarText")
+        btnDepartureOpenCalendarText = "출발일 : $btnDepartureOpenCalendarText"
+        btnArrivalOpenCalendarText = "도착일 : $btnArrivalOpenCalendarText"
+
+        btnDepartureOpenCalendar.setText(btnDepartureOpenCalendarText)
+        btnArrivalOpenCalendar.setText(btnArrivalOpenCalendarText)
     }
 
     // BtnDatePicker 날짜, 요일, 시간 초기값 반환
@@ -64,9 +91,24 @@ class MainActivity : AppCompatActivity() {
         return "${date}(${dayOfWeek}) ${time} 이후"
     }
 
+    private val stationSelectActivityResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                if (data != null) {
+                    val selectedStation = data.getStringExtra("selectedStation")
+                    val isDeparture = data.getBooleanExtra("isDeparture", true)
+                    if (isDeparture) {
+                        btnDepartureStationSelect.text = selectedStation
+                    } else {
+                        btnArrivalStationSelect.text = selectedStation
+                    }
+                }
+            }
+        }
 
     // DatePicker
-    private val DepartureCalendarActivityResult =
+    private val departureCalendarActivityResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
@@ -102,7 +144,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-    private val ArrivalCalendarActivityResult =
+    private val arrivalCalendarActivityResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
