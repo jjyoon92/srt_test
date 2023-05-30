@@ -1,6 +1,7 @@
 package com.jjyoon.calenderpractice
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -69,15 +70,32 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
+                val selectedDateMillis = data?.getLongExtra("selectedDateMillis", 0)
+
+                // SharedPreferences 로 이전에 선택한 날짜 저장
+//                val sharedPref = getSharedPreferences("MyApp", Context.MODE_PRIVATE)
+//                val editor = sharedPref.edit()
+//                editor.putLong("DepartureSelectedDate", selectedDateMillis ?: 0)
+//                editor.apply()
+
                 val selectedDate = data?.getStringExtra("selectedDate")
-                if (selectedDate != null) {
-                    btnDepartureOpenCalendarText = selectedDate
+                val selectedYear = data?.getStringExtra("selectedYear")
+                val selectedMonth = data?.getStringExtra("selectedMonth")
+                val selectedDay = data?.getStringExtra("selectedDay")
+                val selectedDayOfWeek = data?.getStringExtra("selectedDayOfWeek")
+                if (data != null) {
+                    println("data not null")
+//                    btnDepartureOpenCalendarText = selectedDate
                     val selectedTime = data?.getIntExtra("selectedTime", 0)
                     if (selectedTime != null) {
                         if (selectedTime < 10) {
-                            btnDepartureOpenCalendar.text = "출발일 : $selectedDate 0${selectedTime}시 이후"
+                            btnDepartureOpenCalendarText = "출발일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) 0${selectedTime}시 이후"
+                            btnDepartureOpenCalendar.text = btnDepartureOpenCalendarText
+//                            btnArrivalOpenCalendar.text = "도착일 : $selectedDate 0${selectedTime}시 이후"
                         } else {
-                            btnDepartureOpenCalendar.text = "출발일 : $selectedDate ${selectedTime}시 이후"
+                            btnDepartureOpenCalendarText = "출발일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) ${selectedTime}시 이후"
+                            btnDepartureOpenCalendar.text = btnDepartureOpenCalendarText
+//                            btnArrivalOpenCalendar.text = "도착일 : $selectedDate ${selectedTime}시 이후"
                         }
                     }
                 }
@@ -88,15 +106,33 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
+                val selectedDateMillis = data?.getLongExtra("selectedDateMillis", 0)
+
+                // SharedPreferences 로 이전에 선택한 날짜 저장
+                val sharedPref = getSharedPreferences("MyApp", Context.MODE_PRIVATE)
+                val editor = sharedPref.edit()
+                editor.putLong("DepartureSelectedDate", selectedDateMillis ?: 0)
+                editor.apply()
+
                 val selectedDate = data?.getStringExtra("selectedDate")
-                if (selectedDate != null) {
-                    btnArrivalOpenCalendarText = selectedDate
-                    val selectedTime = data?.getIntExtra("selectedTime", 0)
+                val selectedYear = data?.getStringExtra("selectedYear")
+                val selectedMonth = data?.getStringExtra("selectedMonth")
+                val selectedDay = data?.getStringExtra("selectedDay")
+                val selectedDayOfWeek = data?.getStringExtra("selectedDayOfWeek")
+                println(selectedYear + selectedMonth + selectedDay + selectedDayOfWeek)
+                if (data != null) {
+//                    println("data not null")
+//                    btnArrivalOpenCalendarText = selectedDate
+                    val selectedTime = data?.getLongExtra("selectedTime", 0)
                     if (selectedTime != null) {
                         if (selectedTime < 10) {
-                            btnArrivalOpenCalendar.text = "도착일 : $selectedDate 0${selectedTime}시 이후"
+                            btnArrivalOpenCalendarText = "도착일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) 0${selectedTime}시 이후"
+                            btnArrivalOpenCalendar.text = btnArrivalOpenCalendarText
+//                            btnArrivalOpenCalendar.text = "도착일 : $selectedDate 0${selectedTime}시 이후"
                         } else {
-                            btnArrivalOpenCalendar.text = "도착일 : $selectedDate ${selectedTime}시 이후"
+                            btnArrivalOpenCalendarText = "도착일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) ${selectedTime}시 이후"
+                            btnArrivalOpenCalendar.text = btnArrivalOpenCalendarText
+//                            btnArrivalOpenCalendar.text = "도착일 : $selectedDate ${selectedTime}시 이후"
                         }
                     }
                 }

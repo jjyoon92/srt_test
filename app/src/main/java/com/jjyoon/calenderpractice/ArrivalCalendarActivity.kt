@@ -1,6 +1,7 @@
 package com.jjyoon.calenderpractice
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -15,6 +16,7 @@ class ArrivalCalendarActivity : AppCompatActivity(), TimeSelectAdapter.OnTimeCli
 
     private lateinit var timeSelectAdapter: RecyclerView.Adapter<*>
     private lateinit var selectedDate: String
+    private var selectedDateMillis: Long = 0L
     private lateinit var selectedYear: String
     private lateinit var selectedMonth: String
     private lateinit var selectedDay: String
@@ -31,8 +33,18 @@ class ArrivalCalendarActivity : AppCompatActivity(), TimeSelectAdapter.OnTimeCli
         val calendar = Calendar.getInstance()
         val arrivalCalendar = Calendar.getInstance()
 
+        //  SharedPreferences 에서 이전에 선택한 날짜 불러오기
+        val sharedPref = getSharedPreferences("MyApp", Context.MODE_PRIVATE)
+        val selectedMillis = sharedPref.getLong("DepartureSelectedDate", 0)
+
         // DatePicker 최소 날짜를 오늘 날짜로 설정
         calendarView.minDate = calendar.timeInMillis
+
+        // 이전에 선택한 날짜를 calendarView에 지정
+//        calendarView.date = selectedMillis
+//        calendar.timeInMillis = calendar.timeInMillis
+//        arrivalCalendar.timeInMillis = selectedMillis
+
 
         // 24시간
         val times = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23) // 시간 리스트
@@ -49,7 +61,8 @@ class ArrivalCalendarActivity : AppCompatActivity(), TimeSelectAdapter.OnTimeCli
 
         // 날짜와 시간 값 확정
         btnGet.setOnClickListener {
-            val selectedMillis = calendarView.date
+            selectedDateMillis = arrivalCalendar.timeInMillis
+//            selectedDateMillis = calendarView.date
 //            arrivalCalendar.timeInMillis = selectedMillis
 
             val dayOfWeekNumber: Int = arrivalCalendar.get(Calendar.DAY_OF_WEEK)
@@ -73,11 +86,10 @@ class ArrivalCalendarActivity : AppCompatActivity(), TimeSelectAdapter.OnTimeCli
             selectedDay = (arrivalCalendar.get(Calendar.DAY_OF_MONTH)).toString()
             selectedDayOfWeek = dayOfWeek
 
-            val selectedDateString =
-                "${arrivalCalendar.get(Calendar.YEAR)}년 ${arrivalCalendar.get(Calendar.MONTH) + 1}월 ${arrivalCalendar.get(Calendar.DAY_OF_MONTH)}일($dayOfWeek)"
-
-
-            selectedDate = selectedDateString
+            // SharedPreferences 에 날짜 ArrivalSelectedDate 를 저장
+            val sharedPrefEditor = sharedPref.edit()
+            sharedPrefEditor.putLong("ArrivalSelectedDate", selectedDateMillis)
+            sharedPrefEditor.apply()
 
             if (::timeSelectAdapter.isInitialized) {
                 sendResult()
@@ -93,6 +105,7 @@ class ArrivalCalendarActivity : AppCompatActivity(), TimeSelectAdapter.OnTimeCli
     private fun sendResult() {
         val resultIntent = Intent()
 //        resultIntent.putExtra("selectedDate", selectedDate)
+        resultIntent.putExtra("selectedDateMillis", selectedDateMillis)
         resultIntent.putExtra("selectedYear", selectedYear)
         resultIntent.putExtra("selectedMonth", selectedMonth)
         resultIntent.putExtra("selectedDay", selectedDay)
