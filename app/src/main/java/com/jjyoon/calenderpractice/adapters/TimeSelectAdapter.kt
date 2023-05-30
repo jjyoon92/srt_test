@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import android.widget.ArrayAdapter
 import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +25,8 @@ class TimeSelectAdapter(
     // ViewHolder 클래스 정의
     inner class TimeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val buttonItem: Button = itemView.findViewById(R.id.buttonItem)
-        private val recyclerView: RecyclerView? = (context as Activity).findViewById(R.id.timeSelectRecyclerView)
+        private val departureRecyclerView: RecyclerView? = (context as Activity).findViewById(R.id.departureTimeSelectRecyclerView)
+        private val arrivalRecyclerView: RecyclerView? = (context as Activity).findViewById(R.id.departureTimeSelectRecyclerView)
 
 
         fun bind(time: Int) {
@@ -58,7 +58,7 @@ class TimeSelectAdapter(
                 ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
 
-                    val layoutManager = recyclerView?.layoutManager as? LinearLayoutManager
+                    val layoutManager = departureRecyclerView?.layoutManager as? LinearLayoutManager
                     val offset = (layoutManager?.width ?: 0) / 2 - (buttonItem.width / 2)
 
                     layoutManager?.scrollToPositionWithOffset(selectedPosition, offset)

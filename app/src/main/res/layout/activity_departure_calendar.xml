@@ -8,7 +8,7 @@
     tools:context=".DepartureCalendarActivity">
 
     <CalendarView
-        android:id="@+id/calendarView"
+        android:id="@+id/departureCalendarView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
@@ -23,18 +23,18 @@
 
     <!-- 시간 선택 -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/timeSelectRecyclerView"
+        android:id="@+id/departureTimeSelectRecyclerView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/btnDateSelect"
+        app:layout_constraintBottom_toTopOf="@+id/btnDepartureDateSelect"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+        app:layout_constraintTop_toBottomOf="@+id/departureCalendarView" />
 
     <Button
-        android:id="@+id/btnDateSelect"
+        android:id="@+id/btnDepartureDateSelect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
@@ -42,6 +42,6 @@
         android:textSize="15dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+        app:layout_constraintTop_toBottomOf="@+id/departureCalendarView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
