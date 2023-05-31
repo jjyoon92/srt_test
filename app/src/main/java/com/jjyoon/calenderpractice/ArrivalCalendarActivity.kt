@@ -14,6 +14,10 @@ import java.util.*
 
 class ArrivalCalendarActivity : AppCompatActivity(), TimeSelectAdapter.OnTimeClickListener {
 
+    companion object {
+        const val ARRIVALDATE = "ARRIVALDATE"
+    }
+
     private lateinit var timeSelectAdapter: RecyclerView.Adapter<*>
     private lateinit var selectedDate: String
     private var selectedDateMillis: Long = 0L

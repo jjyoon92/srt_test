@@ -4,25 +4,28 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.GridLayout
 import android.widget.GridView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
 
 class StationSelectActivity: AppCompatActivity()  {
 
+    companion object {
+        const val DEPARTURE_STATION = "DEPARTURE_STATION"
+        const val ARRIVAL_STATION = "ARRIVAL_STATION"
+    }
+
     private lateinit var stationSelectAdapter: GridView
     private var stationGridView: GridView? = null
-    private var tvDepartureStation: TextView? = null
-    private var tvArrivalStation: TextView? = null
+    private lateinit var tvDepartureStation: TextView
+    private lateinit var tvArrivalStation: TextView
     private var currentSelectedTextView: TextView? = null
+
+    val resultIntent = Intent()
 
     private var isDeparture = true
 
@@ -37,6 +40,16 @@ class StationSelectActivity: AppCompatActivity()  {
         val btnStationSelect: Button = findViewById(R.id.btnStationSelect)
 
         isDeparture = intent.getBooleanExtra("isDeparture", true)
+
+//        val resultIntent = Intent()
+        val defaultDepartureStation = intent.getStringExtra(DEPARTURE_STATION) ?: ""
+        val defaultArrivalStation = intent.getStringExtra(ARRIVAL_STATION) ?: ""
+        resultIntent.putExtra(DEPARTURE_STATION, defaultDepartureStation)
+        resultIntent.putExtra(ARRIVAL_STATION, defaultArrivalStation)
+
+        tvDepartureStation.text = defaultDepartureStation
+        tvArrivalStation.text = defaultArrivalStation
+
 
         if (isDeparture) {
             currentSelectedTextView = tvDepartureStation
@@ -72,8 +85,13 @@ class StationSelectActivity: AppCompatActivity()  {
                     // Update the text of the currently selected TextView.
                     currentSelectedTextView?.text = getItem(position)
                     val selectedStation = getItem(position)
-                    val resultIntent = Intent().apply {
-                        putExtra("selectedStation", selectedStation)
+                    resultIntent.apply {
+                        if ( currentSelectedTextView == tvDepartureStation ) {
+                            putExtra(DEPARTURE_STATION, selectedStation)
+                        } else {
+                            putExtra(ARRIVAL_STATION, selectedStation)
+                        }
+//                        putExtra("selectedStation", selectedStation)
                         putExtra("isDeparture", isDeparture)
                     }
                     setResult(Activity.RESULT_OK, resultIntent)
