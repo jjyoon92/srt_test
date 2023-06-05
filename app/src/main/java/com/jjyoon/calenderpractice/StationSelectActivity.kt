@@ -33,7 +33,6 @@ class StationSelectActivity: AppCompatActivity()  {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_station_select)
 
-
         stationGridView = findViewById(R.id.stationGridview)
         tvDepartureStation = findViewById(R.id.tvDepartureStation)
         tvArrivalStation = findViewById(R.id.tvArrivalStation)
@@ -91,7 +90,6 @@ class StationSelectActivity: AppCompatActivity()  {
                         } else {
                             putExtra(ARRIVAL_STATION, selectedStation)
                         }
-//                        putExtra("selectedStation", selectedStation)
                         putExtra("isDeparture", isDeparture)
                     }
                     setResult(Activity.RESULT_OK, resultIntent)

@@ -10,6 +10,9 @@ import android.view.View.OnClickListener
 import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -25,10 +28,13 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     private lateinit var selectedDate: String
     private var selectedDepartureTimeStamp by Delegates.notNull<Long>()
     private var selectedArrivalTimeStamp by Delegates.notNull<Long>()
+    private var selectedDepartureTime: Int = 0
+    private var selectedArrivalTime: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
 
         // 표준 함수 4가지
         // apply 자기자신 돌려줌 this
@@ -60,29 +66,71 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
         btnDepartureOpenCalendarText = "출발일 : $btnDepartureOpenCalendarText"
         btnArrivalOpenCalendarText = "도착일 : $btnArrivalOpenCalendarText"
-
         btnDepartureOpenCalendar.setText(btnDepartureOpenCalendarText)
         btnArrivalOpenCalendar.setText(btnArrivalOpenCalendarText)
+
+        btnDepartureStationSelect.setOnClickListener {
+            val stationSelectIntent = Intent(this, StationSelectActivity::class.java).apply {
+                putExtra(
+                    StationSelectActivity.DEPARTURE_STATION,
+                    if (this@MainActivity::btnDepartureStationSelectText.isInitialized) {
+                        btnDepartureStationSelectText
+                    } else {
+                        "출발역"
+                    }
+                )
+                putExtra(
+                    StationSelectActivity.ARRIVAL_STATION,
+                    if (this@MainActivity::btnArrivalStationSelectText.isInitialized) {
+                        btnArrivalStationSelectText
+                    } else {
+                        "도착역"
+                    }
+                )
+            }
+            // 출발 역 선택 플래그 설정 ( 출발역인가 true )
+            stationSelectIntent.putExtra("isDeparture", true)
+            stationSelectActivityResult.launch(stationSelectIntent)
+        }
+
+        btnArrivalStationSelect.setOnClickListener {
+            val stationSelectIntent = Intent(this, StationSelectActivity::class.java).apply {
+                putExtra(
+                    StationSelectActivity.DEPARTURE_STATION,
+                    if (this@MainActivity::btnDepartureStationSelectText.isInitialized) {
+                        btnDepartureStationSelectText
+                    } else {
+                        "출발역"
+                    }
+                )
+                putExtra(
+                    StationSelectActivity.ARRIVAL_STATION,
+                    if (this@MainActivity::btnArrivalStationSelectText.isInitialized) {
+                        btnArrivalStationSelectText
+                    } else {
+                        "도착역"
+                    }
+                )
+            }
+            // 도착 역 선택 플래그 설정 ( 출발역인가 false )
+            stationSelectIntent.putExtra("isDeparture", false)
+            stationSelectActivityResult.launch(stationSelectIntent)
+        }
     }
+
 
     private val stationSelectActivityResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                if (data != null) {
-                    val selectedStation = data.getStringExtra("selectedStation")
-                    btnDepartureStationSelectText =
-                        data.getStringExtra(StationSelectActivity.DEPARTURE_STATION) ?: "출발역"
-                    btnArrivalStationSelectText =
-                        data.getStringExtra(StationSelectActivity.ARRIVAL_STATION) ?: "도착역"
-//                    val isDeparture = data.getBooleanExtra("isDeparture", true)
-//                    if (isDeparture) {
-                    btnDepartureStationSelect.text = btnDepartureStationSelectText
-//                    } else {
-                    btnArrivalStationSelect.text = btnArrivalStationSelectText
-//                    }
-                }
+            if (result.resultCode != Activity.RESULT_OK) {
+                return@registerForActivityResult
             }
+            val data = result.data ?: return@registerForActivityResult
+            btnDepartureStationSelectText =
+                data.getStringExtra(StationSelectActivity.DEPARTURE_STATION) ?: "출발역"
+            btnArrivalStationSelectText =
+                data.getStringExtra(StationSelectActivity.ARRIVAL_STATION) ?: "도착역"
+            btnDepartureStationSelect.text = btnDepartureStationSelectText
+            btnArrivalStationSelect.text = btnArrivalStationSelectText
         }
 
     // DatePicker
@@ -100,44 +148,40 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             val selectedDay = data.getStringExtra(DepartureCalendarActivity.SELECTED_DAY)
             val selectedDayOfWeek =
                 data.getStringExtra(DepartureCalendarActivity.SELECTED_DAYOFWEEK)
-            val selectedTime = data.getIntExtra(DepartureCalendarActivity.SELECTED_TIME, 0)
-            if (selectedTime < 10) {
+            selectedDepartureTime = data.getIntExtra(DepartureCalendarActivity.SELECTED_TIME, 0)
+            if (selectedDepartureTime < 10) {
                 btnDepartureOpenCalendarText =
-                    "출발일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) 0${selectedTime}시 이후"
+                    "출발일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) 0${selectedDepartureTime}시 이후"
                 btnDepartureOpenCalendar.text = btnDepartureOpenCalendarText
             } else {
                 btnDepartureOpenCalendarText =
-                    "출발일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) ${selectedTime}시 이후"
+                    "출발일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) ${selectedDepartureTime}시 이후"
                 btnDepartureOpenCalendar.text = btnDepartureOpenCalendarText
             }
         }
 
     private val arrivalCalendarActivityResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                val selectedDateMillis = data?.getLongExtra("selectedDateMillis", 0)
+            if (result.resultCode != Activity.RESULT_OK) {
+                return@registerForActivityResult
+            }
+            val data = result.data ?: return@registerForActivityResult
 
-                val selectedYear = data?.getStringExtra("selectedYear")
-                val selectedMonth = data?.getStringExtra("selectedMonth")
-                val selectedDay = data?.getStringExtra("selectedDay")
-                val selectedDayOfWeek = data?.getStringExtra("selectedDayOfWeek")
-                println(selectedYear + selectedMonth + selectedDay + selectedDayOfWeek)
-                if (data != null) {
-
-                    val selectedTime = data?.getLongExtra("selectedTime", 0)
-                    if (selectedTime != null) {
-                        if (selectedTime < 10) {
-                            btnArrivalOpenCalendarText =
-                                "도착일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) 0${selectedTime}시 이후"
-                            btnArrivalOpenCalendar.text = btnArrivalOpenCalendarText
-                        } else {
-                            btnArrivalOpenCalendarText =
-                                "도착일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) ${selectedTime}시 이후"
-                            btnArrivalOpenCalendar.text = btnArrivalOpenCalendarText
-                        }
-                    }
-                }
+            selectedArrivalTimeStamp =
+                data.getLongExtra(ArrivalCalendarActivity.SELECTED_TIMESTAMP, 0)
+            val selectedYear = data.getStringExtra(ArrivalCalendarActivity.SELECTED_YEAR)
+            val selectedMonth = data.getStringExtra(ArrivalCalendarActivity.SELECTED_MONTH)
+            val selectedDay = data.getStringExtra(ArrivalCalendarActivity.SELECTED_DAY)
+            val selectedDayOfWeek = data.getStringExtra(ArrivalCalendarActivity.SELECTED_DAYOFWEEK)
+            selectedArrivalTime = data.getIntExtra(ArrivalCalendarActivity.SELECTED_TIME, 0)
+            if (selectedArrivalTime < 10) {
+                btnArrivalOpenCalendarText =
+                    "도착일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) 0${selectedArrivalTime}시 이후"
+                btnArrivalOpenCalendar.text = btnArrivalOpenCalendarText
+            } else {
+                btnArrivalOpenCalendarText =
+                    "도착일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) ${selectedArrivalTime}시 이후"
+                btnArrivalOpenCalendar.text = btnArrivalOpenCalendarText
             }
         }
 
@@ -147,6 +191,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         val dateFormat = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
         val date = dateFormat.format(calendar.time)
         val timeFormat = SimpleDateFormat("HH시", Locale.getDefault())
+        val currentTime = calendar.get(Calendar.HOUR_OF_DAY)
         val time = timeFormat.format(calendar.time)
         val dayOfWeek = when (calendar.get(Calendar.DAY_OF_WEEK)) {
             Calendar.SUNDAY -> "일"
@@ -159,6 +204,9 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             else -> ""
         }
 
+        selectedDepartureTime = currentTime
+        selectedArrivalTime = currentTime
+
         return "${date}(${dayOfWeek}) ${time} 이후"
     }
 
@@ -169,10 +217,12 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id ?: 0) {
-            R.id.btnDepartureStationSelect,
-            R.id.btnArrivalStationSelect -> {
-                goStationSelectActivity()
-            }
+//            R.id.btnDepartureStationSelect -> {
+//                goStationSelectActivity()
+//            }
+//            R.id.btnArrivalStationSelect -> {
+//                goStationSelectActivity()
+//            }
 
             R.id.btnOpenDepartureCalendar -> {
                 goDepartureDateSelectActivity()
@@ -187,7 +237,10 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         val departureCalendarIntent = Intent(this, DepartureCalendarActivity::class.java).apply {
             putExtra(
                 DepartureCalendarActivity.DEPARTURE_DATE,
-                selectedDepartureTimeStamp
+                selectedDepartureTimeStamp,
+            )
+            putExtra(
+                DepartureCalendarActivity.SELECTED_TIME, selectedDepartureTime
             )
         }
         departureCalendarActivityResult.launch(departureCalendarIntent)
@@ -196,34 +249,37 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     fun goArrivalDateSelectActivity() {
         val arrivalCalendarIntent = Intent(this, ArrivalCalendarActivity::class.java).apply {
             putExtra(
-                ArrivalCalendarActivity.ARRIVALDATE,
-                selectedArrivalTimeStamp
+                ArrivalCalendarActivity.ARRIVAL_DATE, selectedArrivalTimeStamp
+            )
+            putExtra(
+                ArrivalCalendarActivity.SELECTED_TIME, selectedArrivalTime
             )
         }
         arrivalCalendarActivityResult.launch(arrivalCalendarIntent)
     }
 
-    fun goStationSelectActivity() {
-        val stationSelectIntent = Intent(this, StationSelectActivity::class.java).apply {
-            putExtra(
-                StationSelectActivity.DEPARTURE_STATION,
-                if (this@MainActivity::btnDepartureStationSelectText.isInitialized) {
-                    btnDepartureStationSelectText
-                } else {
-                    "출발역"
-                }
-            )
-            putExtra(
-                StationSelectActivity.ARRIVAL_STATION,
-                if (this@MainActivity::btnArrivalStationSelectText.isInitialized) {
-                    btnArrivalStationSelectText
-                } else {
-                    "도착역"
-                }
-            )
-        }
-        // 출발 역 선택 플래그 설정 ( 출발역인가 true )
-        stationSelectIntent.putExtra("isDeparture", true)
-        stationSelectActivityResult.launch(stationSelectIntent)
-    }
+//    fun goStationSelectActivity() {
+//        val stationSelectIntent = Intent(this, StationSelectActivity::class.java).apply {
+//            putExtra(
+//                StationSelectActivity.DEPARTURE_STATION,
+//                if (this@MainActivity::btnDepartureStationSelectText.isInitialized) {
+//                    btnDepartureStationSelectText
+//                } else {
+//                    "출발역"
+//                }
+//            )
+//            putExtra(
+//                StationSelectActivity.ARRIVAL_STATION,
+//                if (this@MainActivity::btnArrivalStationSelectText.isInitialized) {
+//                    btnArrivalStationSelectText
+//                } else {
+//                    "도착역"
+//                }
+//            )
+//        }
+//
+//        // 출발 역 선택 플래그 설정 ( 출발역인가 true )
+//        stationSelectIntent.putExtra("isDeparture", true)
+//        stationSelectActivityResult.launch(stationSelectIntent)
+//    }
 }

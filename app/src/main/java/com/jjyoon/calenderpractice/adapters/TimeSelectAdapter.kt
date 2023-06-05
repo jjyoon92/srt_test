@@ -15,19 +15,21 @@ import com.jjyoon.calenderpractice.R
 
 class TimeSelectAdapter(
     private val context: Context,
-    private val times: List<Int>,
+//    private val times: List<Int>,
+    private var selectedPosition: Int = RecyclerView.NO_POSITION, // 이전에 선택한 버튼의 위치를 추적하기 위한 변수
     private val onTimeClickListener: OnTimeClickListener
 ) : RecyclerView.Adapter<TimeSelectAdapter.TimeViewHolder>() {
 
-    private var selectedPosition = RecyclerView.NO_POSITION // 이전에 선택한 버튼의 위치를 추적하기 위한 변수
     private var recyclerView: RecyclerView? = null
+    private val times: List<Int> = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23) // 시간 리스트
+    private var clickedPosition: Int = selectedPosition ?: 0
 
     // ViewHolder 클래스 정의
     inner class TimeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val buttonItem: Button = itemView.findViewById(R.id.buttonItem)
         private val departureRecyclerView: RecyclerView? = (context as Activity).findViewById(R.id.departureTimeSelectRecyclerView)
         private val arrivalRecyclerView: RecyclerView? = (context as Activity).findViewById(R.id.departureTimeSelectRecyclerView)
-
+//        private val times: List<Int> = timeList
 
         fun bind(time: Int) {
             if (time < 10) {
@@ -36,13 +38,14 @@ class TimeSelectAdapter(
                 buttonItem.text = "${time}시"
             }
 
+            onTimeClickListener.onTimeClick(clickedPosition)
+
             buttonItem.setOnClickListener {
                 // 버튼 클릭 시 동작할 코드
-                val clickedPosition = adapterPosition
+                clickedPosition = adapterPosition
                 if (clickedPosition != RecyclerView.NO_POSITION) {
                     updateButtonColor(clickedPosition)
                     onTimeClickListener.onTimeClick(time)
-//                    scrollSelectedItemToCenter(clickedPosition)
                 }
             }
 
@@ -53,7 +56,7 @@ class TimeSelectAdapter(
                 changeButtonColor(buttonItem, isSelected = false)
             }
 
-            // viewtreeObserver ?
+            // 스크롤할 아이템을 가운데로 정렬
             buttonItem.viewTreeObserver.addOnGlobalLayoutListener(object :
                 ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
@@ -64,14 +67,6 @@ class TimeSelectAdapter(
                     layoutManager?.scrollToPositionWithOffset(selectedPosition, offset)
 
                     buttonItem.viewTreeObserver.removeOnGlobalLayoutListener(this)
-//
-//                    // 버튼을 가운데로 정렬
-//                    val layoutPrams = buttonItem.layoutParams as ViewGroup.MarginLayoutParams
-//                    val parentWidth = (recyclerView?.parent as? View)?.width
-//                    val buttonWidth = buttonItem.measuredWidth // <- 이거 확인 viewtreeObserver 아마도 0일 것임.
-//
-//                    layoutPrams.marginStart = (parentWidth - buttonWidth) / 2
-//                    buttonItem.layoutParams = layoutPrams
                 }
             })
 
@@ -81,14 +76,6 @@ class TimeSelectAdapter(
         }
     }
 
-
-    // 스크롤할 아이템을 가운데로 정렬하는 함수
-//    private fun scrollSelectedItemToCenter(selectedPosition: Int) {
-//        val layoutManager = recyclerView?.layoutManager as? LinearLayoutManager
-//        val offset = (recyclerView?.width ?: 0) / 2 - ( / 2)
-//
-//        layoutManager?.scrollToPositionWithOffset(selectedPosition, offset)
-//    }
 
     // 버튼의 색상을 변경하는 함수
     private fun changeButtonColor(button: Button, isSelected: Boolean) {

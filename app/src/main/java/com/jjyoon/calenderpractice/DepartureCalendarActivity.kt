@@ -46,13 +46,13 @@ class DepartureCalendarActivity : AppCompatActivity(), TimeSelectAdapter.OnTimeC
 
         // 이전에 선택한 날짜를 calendarView에 지정
         calendarView.date = intent.getLongExtra(DEPARTURE_DATE, calendarView.minDate)
-//        calendar.timeInMillis = intent.getLongExtra(DEPARTUREDATE, calendarView.minDate)
         departureCalendar.timeInMillis = intent.getLongExtra(DEPARTURE_DATE, calendarView.minDate)
 
         // 24시간
-        val times = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23) // 시간 리스트
+//        val times = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23) // 시간 리스트
+        val timeToPosition = intent.getIntExtra(SELECTED_TIME, 0)
         timeSelectAdapter =
-            TimeSelectAdapter(this, times, this) // this : Calendar Activity 클래스 인스턴스, this:
+            TimeSelectAdapter(this, timeToPosition,this) // this : Calendar Activity 클래스 인스턴스, this:
         val timeSelectRecyclerView: RecyclerView = findViewById(R.id.departureTimeSelectRecyclerView)
         timeSelectRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         timeSelectRecyclerView.adapter = timeSelectAdapter
@@ -78,7 +78,6 @@ class DepartureCalendarActivity : AppCompatActivity(), TimeSelectAdapter.OnTimeC
                 7 -> dayOfWeek = "토"
             }
 
-
             selectedYear = departureCalendar.get(Calendar.YEAR).toString()
             selectedMonth = (departureCalendar.get(Calendar.MONTH) + 1).toString()
             selectedDay = (departureCalendar.get(Calendar.DAY_OF_MONTH)).toString()
@@ -92,12 +91,6 @@ class DepartureCalendarActivity : AppCompatActivity(), TimeSelectAdapter.OnTimeC
 
     // TimeNumberClick
     override fun onTimeClick(time: Int) {
-
-//        val layoutManager = timeSelectRecyclerView?.layoutManager as? LinearLayoutManager
-//        val offset = (layoutManager?.width ?: 0) / 2 - (buttonItem.width / 2)
-
-//        layoutManager?.scrollToPositionWithOffset(selectedPosition, offset)
-
         selectedTime = time
     }
 
