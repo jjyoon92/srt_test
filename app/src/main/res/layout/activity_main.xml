@@ -7,28 +7,38 @@
     android:background="@color/gray"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btnDepartureStationSelect"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/stationSelectLinearLayout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="92dp"
-        android:layout_marginTop="40dp"
-        android:paddingHorizontal="50dp"
-        android:paddingVertical="30dp"
-        android:text="출발역"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
+        app:layout_constraintEnd_toEndOf="@+id/mainGuidelineVerticalRight"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="50dp"
+        >
 
-    <Button
-        android:id="@+id/btnArrivalStationSelect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="88dp"
-        android:text="도착역"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:id="@+id/btnDepartureStationSelect"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_weight="1"
+            android:text="출발역"
+            />
 
+        <Button
+            android:id="@+id/btnArrivalStationSelect"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_weight="1"
+            android:text="도착역"
+            />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnOpenDepartureCalendar"
@@ -37,43 +47,159 @@
         android:background="#ffffff"
         android:text="출발 날짜 선택"
         android:textColor="#000000"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/mainActivityGuidelineVerticalRight"
-        app:layout_constraintStart_toStartOf="@+id/mainActivityGuidelineVerticalLeft"
+        app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
+        app:layout_constraintEnd_toEndOf="@+id/mainGuidelineVerticalRight"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_bias="0.265" />
 
     <Button
         android:id="@+id/btnOpenArrivalCalendar"
         android:layout_width="0dp"
         android:layout_height="50dp"
+        android:layout_marginTop="30dp"
         android:background="#ffffff"
         android:text="도착 날짜 선택"
         android:textColor="#000000"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/mainActivityGuidelineVerticalRight"
-        app:layout_constraintStart_toStartOf="@+id/mainActivityGuidelineVerticalLeft"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintVertical_bias="0.358" />
+        app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
+        app:layout_constraintEnd_toEndOf="@+id/mainGuidelineVerticalRight"
+        app:layout_constraintTop_toBottomOf="@+id/btnOpenDepartureCalendar" />
+
+    <!-- 인원 선택 버튼 -->
+    <LinearLayout
+        android:id="@+id/llAgeCountContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/mainGuidelineVerticalRight"
+        app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
+        app:layout_constraintTop_toBottomOf="@+id/btnOpenArrivalCalendar">
+
+        <LinearLayout
+            android:id="@+id/llAdultAgeCountWrap"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnAdultMinus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/minus" />
+
+            <!-- 중간 숫자 표시를 위한 TextView -->
+            <TextView
+                android:id="@+id/tvAdultCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/adult_count"
+                android:textAlignment="center" />
+
+            <!-- "+" 버튼 -->
+            <Button
+                android:id="@+id/btnAdultPlus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/plus" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/llChildAgeCountWrap"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnChildMinus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/minus" />
+
+            <!-- 중간 숫자 표시를 위한 TextView -->
+            <TextView
+                android:id="@+id/tvChildCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/child_count"
+                android:textAlignment="center" />
+
+            <!-- "+" 버튼 -->
+            <Button
+                android:id="@+id/btnChildPlus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/plus" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/llChildOldCountWrap"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnOldMinus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/minus" />
+
+            <!-- 중간 숫자 표시를 위한 TextView -->
+            <TextView
+                android:id="@+id/tvOldCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/old_count"
+                android:textAlignment="center" />
+
+            <!-- "+" 버튼 -->
+            <Button
+                android:id="@+id/btnOldPlus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/plus" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnSearchTrain"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/search_for_train"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@id/llAgeCountContainer"
+        app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
+        app:layout_constraintEnd_toEndOf="@+id/mainGuidelineVerticalRight"
+        />
+
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/mainActivityGuidelineVerticalLeft"
+        android:id="@+id/mainGuidelineVerticalLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.1" />
+        app:layout_constraintGuide_percent="0.05" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/mainActivityGuidelineVerticalRight"
+        android:id="@+id/mainGuidelineVerticalRight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.9" />
+        app:layout_constraintGuide_percent="0.95" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/mainActivityGuidelineVerticalCenter"
+        android:id="@+id/mainGuidelineVerticalCenter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"

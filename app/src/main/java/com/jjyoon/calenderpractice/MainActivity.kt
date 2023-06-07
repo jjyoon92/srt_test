@@ -8,7 +8,22 @@ import android.os.Bundle
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.Button
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.jjyoon.calenderpractice.services.ApiResponse
+import com.jjyoon.calenderpractice.services.SearchTrainApiService
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
@@ -30,6 +45,36 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     private var selectedArrivalTimeStamp by Delegates.notNull<Long>()
     private var selectedDepartureTime: Int = 0
     private var selectedArrivalTime: Int = 0
+
+    private val dateFormat: SimpleDateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+    private lateinit var departureDate: String
+    private lateinit var arrivalDate: String
+
+    private lateinit var btnAdultMinus: Button
+    private lateinit var btnAdultPlus: Button
+    private lateinit var tvAdultCount: TextView
+    private lateinit var btnChildMinus: Button
+    private lateinit var btnChildPlus: Button
+    private lateinit var tvChildCount: TextView
+    private lateinit var btnOldMinus: Button
+    private lateinit var btnOldPlus: Button
+    private lateinit var tvOldCount: TextView
+
+    private lateinit var btnSearchTrain: Button
+
+    companion object RetrofitBuilder {
+        lateinit var trainApiService: SearchTrainApiService
+        init {
+            val retrofit = Retrofit.Builder()
+                .baseUrl("http://172.30.1.23:4000")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+
+            val trainApiService = retrofit.create(SearchTrainApiService::class.java)
+        }
+    }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,6 +161,44 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             stationSelectIntent.putExtra("isDeparture", false)
             stationSelectActivityResult.launch(stationSelectIntent)
         }
+
+        btnAdultMinus = findViewById<Button>(R.id.btnAdultMinus)
+        btnAdultPlus = findViewById<Button>(R.id.btnAdultPlus)
+        tvAdultCount = findViewById<TextView>(R.id.tvAdultCount)
+        btnChildMinus = findViewById<Button>(R.id.btnChildMinus)
+        btnChildPlus = findViewById<Button>(R.id.btnChildPlus)
+        tvChildCount = findViewById<TextView>(R.id.tvChildCount)
+        btnOldMinus = findViewById<Button>(R.id.btnOldMinus)
+        btnOldPlus = findViewById<Button>(R.id.btnOldPlus)
+        tvOldCount = findViewById<TextView>(R.id.tvOldCount)
+
+        val adultCount = 0
+        val childCount = 0
+        val oldCount = 0
+
+        val formattedAdultCount = getString(R.string.adult_count, adultCount)
+        val formattedChildCount = getString(R.string.child_count, childCount)
+        val formattedOldCount = getString(R.string.old_count, oldCount)
+
+        tvAdultCount.text = formattedAdultCount
+        tvChildCount.text = formattedChildCount
+        tvOldCount.text = formattedOldCount
+
+        setupCounterButton(btnAdultPlus, btnAdultMinus, tvAdultCount)
+        setupCounterButton(btnChildPlus, btnChildMinus, tvChildCount)
+        setupCounterButton(btnOldPlus, btnOldMinus, tvOldCount)
+
+
+        btnSearchTrain = findViewById(R.id.btnSearchTrain)
+        
+        btnSearchTrain.setOnClickListener {
+            println("열차 조회하기")
+            sendRequestToSearchForTrains()
+        }
+
+
+
+
     }
 
 
@@ -133,7 +216,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             btnArrivalStationSelect.text = btnArrivalStationSelectText
         }
 
-    // DatePicker
+    // 출발 일정 선택 
     private val departureCalendarActivityResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode != Activity.RESULT_OK) {
@@ -148,7 +231,15 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             val selectedDay = data.getStringExtra(DepartureCalendarActivity.SELECTED_DAY)
             val selectedDayOfWeek =
                 data.getStringExtra(DepartureCalendarActivity.SELECTED_DAYOFWEEK)
+
+            departureDate = dateFormat.format(selectedDepartureTimeStamp).toString()
+
             selectedDepartureTime = data.getIntExtra(DepartureCalendarActivity.SELECTED_TIME, 0)
+
+            println("selectedDepartureTimeStamp : " + selectedDepartureTimeStamp)
+            println("departureDate : " + departureDate)
+            println("selectedDepartureTime : " + selectedDepartureTime)
+
             if (selectedDepartureTime < 10) {
                 btnDepartureOpenCalendarText =
                     "출발일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) 0${selectedDepartureTime}시 이후"
@@ -160,6 +251,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             }
         }
 
+    // 도착 일정 선택
     private val arrivalCalendarActivityResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode != Activity.RESULT_OK) {
@@ -173,7 +265,15 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             val selectedMonth = data.getStringExtra(ArrivalCalendarActivity.SELECTED_MONTH)
             val selectedDay = data.getStringExtra(ArrivalCalendarActivity.SELECTED_DAY)
             val selectedDayOfWeek = data.getStringExtra(ArrivalCalendarActivity.SELECTED_DAYOFWEEK)
+
+            arrivalDate = dateFormat.format(selectedArrivalTimeStamp).toString()
+
             selectedArrivalTime = data.getIntExtra(ArrivalCalendarActivity.SELECTED_TIME, 0)
+
+            println("selectedArrivalTimeStamp : " + selectedArrivalTimeStamp)
+            println("arrivalDate : " + arrivalDate)
+            println("selectedArrivalTime : " + selectedArrivalTime)
+
             if (selectedArrivalTime < 10) {
                 btnArrivalOpenCalendarText =
                     "도착일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) 0${selectedArrivalTime}시 이후"
@@ -227,12 +327,14 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             R.id.btnOpenDepartureCalendar -> {
                 goDepartureDateSelectActivity()
             }
+
             R.id.btnOpenArrivalCalendar -> {
                 goArrivalDateSelectActivity()
             }
         }
     }
 
+    // 출발/도착 일정 
     fun goDepartureDateSelectActivity() {
         val departureCalendarIntent = Intent(this, DepartureCalendarActivity::class.java).apply {
             putExtra(
@@ -258,28 +360,116 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         arrivalCalendarActivityResult.launch(arrivalCalendarIntent)
     }
 
-//    fun goStationSelectActivity() {
-//        val stationSelectIntent = Intent(this, StationSelectActivity::class.java).apply {
-//            putExtra(
-//                StationSelectActivity.DEPARTURE_STATION,
-//                if (this@MainActivity::btnDepartureStationSelectText.isInitialized) {
-//                    btnDepartureStationSelectText
-//                } else {
-//                    "출발역"
-//                }
-//            )
-//            putExtra(
-//                StationSelectActivity.ARRIVAL_STATION,
-//                if (this@MainActivity::btnArrivalStationSelectText.isInitialized) {
-//                    btnArrivalStationSelectText
-//                } else {
-//                    "도착역"
-//                }
-//            )
-//        }
-//
-//        // 출발 역 선택 플래그 설정 ( 출발역인가 true )
-//        stationSelectIntent.putExtra("isDeparture", true)
-//        stationSelectActivityResult.launch(stationSelectIntent)
-//    }
+    // 인원수 설정
+    fun setupCounterButton(btnPlus: Button, btnMinus: Button, tvCount: TextView) {
+        btnPlus.setOnClickListener {
+            var currentCount = tvCount.text.toString().toInt()
+            if (currentCount < 10) {
+                tvCount.text = (currentCount + 1).toString()
+            }
+        }
+
+        btnMinus.setOnClickListener {
+            var currentCount = tvCount.text.toString().toInt()
+            if (currentCount > 0) {
+                tvCount.text = (currentCount - 1).toString()
+            }
+        }
+    }
+
+    // 열차 조회 (서버에 요청)
+    fun sendRequestToSearchForTrains() {
+        val departureStation = btnDepartureStationSelectText
+        val arrivalStation = btnArrivalStationSelectText
+        val departureDate = departureDate
+        val arrivalDate = arrivalDate
+        val adultCount = tvAdultCount.text.toString().toInt()
+        val childCount = tvChildCount.text.toString().toInt()
+        val oldCount = tvOldCount.text.toString().toInt()
+
+        val jsonObject = JSONObject()
+        jsonObject.put("depPlaceName", departureStation)
+        jsonObject.put("arrPlaceName", arrivalStation)
+        jsonObject.put("depPlandTime", departureDate)
+        jsonObject.put("adultCount", adultCount)
+        jsonObject.put("childCount", childCount)
+        jsonObject.put("oldCount", oldCount)
+
+        val requestBody = jsonObject.toString()
+            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+
+        val call = trainApiService.searchTrain(requestBody)
+        call.enqueue(object : Callback<ApiResponse> {
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.isSuccessful) {
+                    // 서버 응답 처리
+                    val apiResponse = response.body()
+                    // TODO: 서버 응답에 대한 로직 추가
+                    println("요청 성공")
+                    handleTrainResponse(apiResponse)
+                } else {
+                    // 서버 응답 실패
+                    // TODO: 실패에 대한 처리 로직 추가
+                    println("요청 실패")
+                    handleTrainError()
+                }
+            }
+
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                // 요청 실패
+                // TODO: 실패에 대한 처리 로직을 추가하세요.
+                handleTrainError()
+            }
+        })
+    }
+
+    fun handleTrainResponse(apiResponse: ApiResponse?) {
+        // TODO : 서버 응답에 대한 로직 구현
+        apiResponse?.let {
+//            val trainData = apiResponse.trainData
+            // TODO : 응답으로 넘어온 데이터를 활용한 작업 수행
+        }
+    }
+
+    fun handleTrainError() {
+        // TODO : 서버 응답 실패 또는 요청 실패에 대한 로직 처리 구현
+        // ex: Error message, 재시도 ...
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -7,4 +7,17 @@
     <string name="thu">목</string>
     <string name="fri">금</string>
     <string name="sat">토</string>
+
+    <string name="departure_station">출발역</string>
+    <string name="arrival_station">도착역</string>
+
+    <string name="date_select">날짜 선택</string>
+
+    <string name="minus">-</string>
+    <string name="plus">+</string>
+    <string name="adult_count">%d</string>
+    <string name="child_count">%d</string>
+    <string name="old_count">%d</string>
+
+    <string name="search_for_train">열차 조회하기</string>
 </resources>

@@ -9,40 +9,61 @@
 
         <CalendarView
             android:id="@+id/arrivalCalendarView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
             android:calendarViewShown="false"
             android:datePickerMode="calendar"
-            android:scaleX="1.1"
-            android:scaleY="1.1"
-            app:layout_constraintHorizontal_bias="0.491"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            android:scaleX="1.05"
+            android:scaleY="1.05"
+            app:layout_constraintStart_toStartOf="@id/arrivalCalendarGuidelineVerticalLeft"
+            app:layout_constraintEnd_toEndOf="@id/arrivalCalendarGuidelineVerticalRight"
             app:layout_constraintTop_toTopOf="parent" />
 
     <!-- 시간 선택 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/arrivalTimeSelectRecyclerView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginTop="30dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@+id/btnArrivalDateSelect"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="@id/arrivalCalendarGuidelineVerticalLeft"
+        app:layout_constraintEnd_toEndOf="@id/arrivalCalendarGuidelineVerticalRight"
         app:layout_constraintTop_toBottomOf="@+id/arrivalCalendarView" />
-
 
     <Button
         android:id="@+id/btnArrivalDateSelect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        android:text="날짜 선택"
-        android:textSize="15dp"
+        android:text="@string/date_select"
+        android:textSize="15sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/arrivalCalendarView" />
+        app:layout_constraintTop_toBottomOf="@+id/arrivalTimeSelectRecyclerView" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/arrivalCalendarGuidelineVerticalLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/arrivalCalendarGuidelineVerticalRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.95" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/arrivalCalendarGuidelineVerticalCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

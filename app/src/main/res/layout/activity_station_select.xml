@@ -5,69 +5,74 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="출발"
-        android:textSize="20sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvDepartureStation"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="60dp"
-        android:layout_marginTop="112dp"
-        android:text="출발역"
+        android:layout_marginTop="30dp"
+        android:paddingVertical="15dp"
+        android:text="@string/departure_station"
+        android:textAlignment="center"
         android:textSize="30sp"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/stationSelectGuidelineVerticalCenter"
+        app:layout_constraintStart_toStartOf="@id/stationSelectGuidelineVerticalLeft"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvArrivalStation"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="236dp"
-        android:layout_marginTop="112dp"
-        android:text="도착역"
+        android:layout_marginTop="30dp"
+        android:paddingVertical="15dp"
+        android:text="@string/arrival_station"
+        android:textAlignment="center"
         android:textSize="30sp"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/stationSelectGuidelineVerticalRight"
+        app:layout_constraintStart_toStartOf="@id/stationSelectGuidelineVerticalCenter"
         app:layout_constraintTop_toTopOf="parent" />
 
     <GridView
         android:id="@+id/stationGridview"
         android:layout_width="0dp"
         android:layout_height="288dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="30dp"
         android:background="#dedede"
         android:numColumns="3"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintEnd_toEndOf="@id/stationSelectGuidelineVerticalRight"
+        app:layout_constraintStart_toStartOf="@+id/stationSelectGuidelineVerticalLeft"
         app:layout_constraintTop_toBottomOf="@+id/tvDepartureStation" />
 
     <Button
         android:id="@+id/btnStationSelect"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="30dp"
         android:text="선택하기"
         app:layout_constraintTop_toBottomOf="@+id/stationGridview"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintStart_toStartOf="@id/stationSelectGuidelineVerticalLeft"
+        app:layout_constraintEnd_toEndOf="@id/stationSelectGuidelineVerticalRight"
+        />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
+        android:id="@+id/stationSelectGuidelineVerticalLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.94" />
+        app:layout_constraintGuide_percent="0.05" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
+        android:id="@+id/stationSelectGuidelineVerticalRight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.06" />
+        app:layout_constraintGuide_percent="0.95" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/stationSelectGuidelineVerticalCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
