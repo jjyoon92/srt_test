@@ -8,7 +8,17 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#BDBDBD</color>
+    <color name="noticeBanner">#E0D4FF</color>
 
     <color name="holiday_red">#D12626</color>
+
+    <color name="navy">#1C3879</color>
+    <color name="blue">#607EAA</color>
+    <color name="beige">#EAE3D2</color>
+    <color name="winter">#F9F5EB</color>
+
+    <color name="primaryColor">#8A62A9</color>
+    <color name="secondaryColor">#AE89E9</color>
+    <color name="background">#E4E3E3</color>
 
 </resources>

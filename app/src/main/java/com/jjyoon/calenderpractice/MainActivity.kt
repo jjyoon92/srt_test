@@ -63,23 +63,24 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     private lateinit var btnSearchTrain: Button
 
     companion object RetrofitBuilder {
-        lateinit var trainApiService: SearchTrainApiService
+        var trainApiService: SearchTrainApiService
+
         init {
             val retrofit = Retrofit.Builder()
-                .baseUrl("http://172.30.1.23:4000")
+//                .baseUrl("http://172.30.1.23:4000")
+//                .baseUrl("http://192.168.100.77:4000")
+                .baseUrl("http://192.168.100.77:4001")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
 
-            val trainApiService = retrofit.create(SearchTrainApiService::class.java)
+            trainApiService = retrofit.create(SearchTrainApiService::class.java)
         }
     }
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
 
         // 표준 함수 4가지
         // apply 자기자신 돌려줌 this
@@ -102,6 +103,8 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             setOnClickListener(this@MainActivity)
             this
         }
+
+
 
         val currentDate = getCurrentDate()
         selectedDepartureTimeStamp = getCurrentTimeStamp()
@@ -172,7 +175,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         btnOldPlus = findViewById<Button>(R.id.btnOldPlus)
         tvOldCount = findViewById<TextView>(R.id.tvOldCount)
 
-        val adultCount = 0
+        val adultCount = 1
         val childCount = 0
         val oldCount = 0
 
@@ -190,15 +193,19 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
 
         btnSearchTrain = findViewById(R.id.btnSearchTrain)
-        
+
         btnSearchTrain.setOnClickListener {
             println("열차 조회하기")
             sendRequestToSearchForTrains()
         }
 
-
-
-
+        // 초기값
+        btnDepartureStationSelectText = "동대구"
+        btnArrivalStationSelectText = "수서"
+        btnDepartureStationSelect.setText(btnDepartureStationSelectText)
+        btnArrivalStationSelect.setText(btnArrivalStationSelectText)
+        departureDate = dateFormat.format(getCurrentTimeStamp()).toString()
+        arrivalDate = dateFormat.format(getCurrentTimeStamp()).toString()
     }
 
 
@@ -209,9 +216,9 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             }
             val data = result.data ?: return@registerForActivityResult
             btnDepartureStationSelectText =
-                data.getStringExtra(StationSelectActivity.DEPARTURE_STATION) ?: "출발역"
+                data.getStringExtra(StationSelectActivity.DEPARTURE_STATION) ?: "동대구"
             btnArrivalStationSelectText =
-                data.getStringExtra(StationSelectActivity.ARRIVAL_STATION) ?: "도착역"
+                data.getStringExtra(StationSelectActivity.ARRIVAL_STATION) ?: "수서"
             btnDepartureStationSelect.text = btnDepartureStationSelectText
             btnArrivalStationSelect.text = btnArrivalStationSelectText
         }
@@ -388,12 +395,12 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         val oldCount = tvOldCount.text.toString().toInt()
 
         val jsonObject = JSONObject()
-        jsonObject.put("depPlaceName", departureStation)
-        jsonObject.put("arrPlaceName", arrivalStation)
-        jsonObject.put("depPlandTime", departureDate)
-        jsonObject.put("adultCount", adultCount)
-        jsonObject.put("childCount", childCount)
-        jsonObject.put("oldCount", oldCount)
+        jsonObject.put("departStation", departureStation)
+        jsonObject.put("arriveStation", arrivalStation)
+        jsonObject.put("departTime", departureDate)
+        jsonObject.put("adult", adultCount)
+        jsonObject.put("kid", childCount)
+        jsonObject.put("old", oldCount)
 
         val requestBody = jsonObject.toString()
             .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
@@ -404,6 +411,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
                 if (response.isSuccessful) {
                     // 서버 응답 처리
                     val apiResponse = response.body()
+//                    println("response.message() : " + response.message())
                     // TODO: 서버 응답에 대한 로직 추가
                     println("요청 성공")
                     handleTrainResponse(apiResponse)
@@ -428,6 +436,10 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         apiResponse?.let {
 //            val trainData = apiResponse.trainData
             // TODO : 응답으로 넘어온 데이터를 활용한 작업 수행
+            println(apiResponse)
+            println(apiResponse.result)
+            println("apiResponse.data : " + apiResponse.data)
+//            println(apiResponse.message)
         }
     }
 

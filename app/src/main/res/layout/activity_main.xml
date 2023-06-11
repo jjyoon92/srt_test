@@ -4,39 +4,135 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray"
+    android:background="@color/background"
     tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/tvMainNoticeBanner"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="공지사항 : 열차 도착 지연 안내. 늦어서 죄송합니다."
+        android:textColor="@color/black"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:background="@color/blue"
+        />
+
+    <RadioGroup
+        android:id="@+id/tripSelectRadioGroup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="15dp"
+        app:layout_constraintEnd_toEndOf="@+id/mainGuidelineVerticalRight"
+        app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
+        app:layout_constraintTop_toBottomOf="@+id/tvMainNoticeBanner"
+        >
+
+        <RadioButton
+            android:id="@+id/radioButtonOnewayTrip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            android:text="편도" />
+
+<!--        style="@style/RadioButtonNoButtonStyle"-->
+        <RadioButton
+            android:id="@+id/radioButtonRoundTrip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            android:text="왕복" />
+    </RadioGroup>
+
 
     <LinearLayout
         android:id="@+id/stationSelectLinearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:orientation="horizontal"
-        app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
         app:layout_constraintEnd_toEndOf="@+id/mainGuidelineVerticalRight"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="50dp"
-        >
+        app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
+        app:layout_constraintTop_toBottomOf="@id/tripSelectRadioGroup">
 
-        <Button
-            android:id="@+id/btnDepartureStationSelect"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/departureStationSelectGroupCl"
             android:layout_width="0dp"
             android:layout_height="100dp"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="0dp"
             android:layout_weight="1"
-            android:text="출발역"
-            />
+            android:layout_marginRight="2dp"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnArrivalStationSelect"
+            <TextView
+                android:id="@+id/departureStationSelectLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:elevation="10dp"
+                android:text="출발"
+                android:textColor="@color/black"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btnDepartureStationSelect"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/departure_station"
+                android:textColor="@color/black"
+                android:textSize="36sp"
+                style="@style/StationSelectButtonStyle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/arrivalStationSelectGroupCl"
             android:layout_width="0dp"
             android:layout_height="100dp"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="0dp"
             android:layout_weight="1"
-            android:text="도착역"
-            />
+            android:layout_marginLeft="2dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/arrivalStationSelectLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:elevation="10dp"
+                android:text="도착"
+                android:textColor="@color/black"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btnArrivalStationSelect"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="0dp"
+                android:text="@string/departure_station"
+                android:textColor="@color/black"
+                android:textSize="36sp"
+                style="@style/StationSelectButtonStyle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </LinearLayout>
 
@@ -44,25 +140,28 @@
         android:id="@+id/btnOpenDepartureCalendar"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:background="#ffffff"
+        android:layout_marginTop="20dp"
         android:text="출발 날짜 선택"
         android:textColor="#000000"
-        app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
+        android:textSize="18sp"
+        style="@style/StationSelectButtonStyle"
         app:layout_constraintEnd_toEndOf="@+id/mainGuidelineVerticalRight"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.265" />
+        app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
+        app:layout_constraintTop_toBottomOf="@+id/stationSelectLinearLayout"
+        app:layout_constraintBottom_toTopOf="@+id/btnOpenArrivalCalendar"
+        />
 
     <Button
         android:id="@+id/btnOpenArrivalCalendar"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:layout_marginTop="30dp"
-        android:background="#ffffff"
+        android:layout_marginTop="20dp"
         android:text="도착 날짜 선택"
+        android:textSize="18sp"
         android:textColor="#000000"
-        app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
+        style="@style/StationSelectButtonStyle"
         app:layout_constraintEnd_toEndOf="@+id/mainGuidelineVerticalRight"
+        app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
         app:layout_constraintTop_toBottomOf="@+id/btnOpenDepartureCalendar" />
 
     <!-- 인원 선택 버튼 -->
@@ -81,6 +180,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginRight="3dp"
             android:orientation="horizontal">
 
             <Button
@@ -88,30 +188,36 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                style="@style/PersonCountUpDownButtonStyle"
                 android:text="@string/minus" />
 
             <!-- 중간 숫자 표시를 위한 TextView -->
+
+            <!-- "+" 버튼 -->
             <TextView
                 android:id="@+id/tvAdultCount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textColor="@color/black"
                 android:text="@string/adult_count"
                 android:textAlignment="center" />
 
-            <!-- "+" 버튼 -->
             <Button
                 android:id="@+id/btnAdultPlus"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                style="@style/PersonCountUpDownButtonStyle"
                 android:text="@string/plus" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/llChildAgeCountWrap"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginRight="3dp"
             android:orientation="horizontal">
 
             <Button
@@ -119,6 +225,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                style="@style/PersonCountUpDownButtonStyle"
                 android:text="@string/minus" />
 
             <!-- 중간 숫자 표시를 위한 TextView -->
@@ -128,6 +235,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/child_count"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <!-- "+" 버튼 -->
@@ -136,8 +244,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                style="@style/PersonCountUpDownButtonStyle"
                 android:text="@string/plus" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/llChildOldCountWrap"
             android:layout_width="0dp"
@@ -150,6 +260,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                style="@style/PersonCountUpDownButtonStyle"
                 android:text="@string/minus" />
 
             <!-- 중간 숫자 표시를 위한 TextView -->
@@ -159,6 +270,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/old_count"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <!-- "+" 버튼 -->
@@ -167,6 +279,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                style="@style/PersonCountUpDownButtonStyle"
                 android:text="@string/plus" />
         </LinearLayout>
 
@@ -176,12 +289,12 @@
         android:id="@+id/btnSearchTrain"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/search_for_train"
         android:layout_marginTop="30dp"
-        app:layout_constraintTop_toBottomOf="@id/llAgeCountContainer"
-        app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
+        android:text="@string/search_for_train"
+        style="@style/TrainSearchButtonStyle"
         app:layout_constraintEnd_toEndOf="@+id/mainGuidelineVerticalRight"
-        />
+        app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
+        app:layout_constraintTop_toBottomOf="@id/llAgeCountContainer" />
 
 
     <androidx.constraintlayout.widget.Guideline
@@ -204,6 +317,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

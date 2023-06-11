@@ -40,9 +40,14 @@ class ArrivalCalendarActivity : AppCompatActivity(), TimeSelectAdapter.OnTimeCli
         val calendarView: CalendarView = findViewById(R.id.arrivalCalendarView)
         val btnGet: Button = findViewById(R.id.btnArrivalDateSelect)
         val arrivalCalendar = Calendar.getInstance()
+        val maxCalendar = Calendar.getInstance()
+        maxCalendar.add(Calendar.DAY_OF_YEAR, 6)
 
-        // DatePicker 최소 날짜를 오늘 날짜로 설정
+        // Calendar 최소 날짜를 오늘 날짜로 설정
         calendarView.minDate = arrivalCalendar.timeInMillis
+
+        // Calendar 지정가능한 날짜를 오늘로부터 7일간으로 설정
+        calendarView.maxDate = maxCalendar.timeInMillis
 
         // 이전에 선택한 날짜를 calendarView에 지정
         calendarView.date = intent.getLongExtra(ARRIVAL_DATE, calendarView.minDate)
