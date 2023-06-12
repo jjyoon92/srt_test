@@ -121,7 +121,7 @@ class TimeSelectAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.list_item, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.calendar_time_list_item, parent, false)
         return TimeViewHolder(view)
     }
 

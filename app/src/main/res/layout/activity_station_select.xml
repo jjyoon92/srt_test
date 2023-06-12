@@ -7,7 +7,7 @@
 
 
     <TextView
-        android:id="@+id/tvDepartureStation"
+        android:id="@+id/tvSelectedDepartureStation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvArrivalStation"
+        android:id="@+id/tvSelectedArrivalStation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
@@ -41,7 +41,7 @@
         android:numColumns="3"
         app:layout_constraintEnd_toEndOf="@id/stationSelectGuidelineVerticalRight"
         app:layout_constraintStart_toStartOf="@+id/stationSelectGuidelineVerticalLeft"
-        app:layout_constraintTop_toBottomOf="@+id/tvDepartureStation" />
+        app:layout_constraintTop_toBottomOf="@+id/tvSelectedDepartureStation" />
 
     <Button
         android:id="@+id/btnStationSelect"

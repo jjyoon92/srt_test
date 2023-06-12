@@ -34,8 +34,8 @@ class StationSelectActivity: AppCompatActivity()  {
         setContentView(R.layout.activity_station_select)
 
         stationGridView = findViewById(R.id.stationGridview)
-        tvDepartureStation = findViewById(R.id.tvDepartureStation)
-        tvArrivalStation = findViewById(R.id.tvArrivalStation)
+        tvDepartureStation = findViewById(R.id.tvSelectedDepartureStation)
+        tvArrivalStation = findViewById(R.id.tvSelectedArrivalStation)
         val btnStationSelect: Button = findViewById(R.id.btnStationSelect)
 
         isDeparture = intent.getBooleanExtra("isDeparture", true)

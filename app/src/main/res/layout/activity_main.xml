@@ -19,7 +19,7 @@
         />
 
     <RadioGroup
-        android:id="@+id/tripSelectRadioGroup"
+        android:id="@+id/radioGroupTripSelect"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -35,7 +35,11 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textAlignment="center"
-            android:text="편도" />
+            android:button="@null"
+            android:text="편도"
+            android:textSize="18sp"
+            android:checked="true"
+            />
 
 <!--        style="@style/RadioButtonNoButtonStyle"-->
         <RadioButton
@@ -44,7 +48,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textAlignment="center"
-            android:text="왕복" />
+            android:button="@null"
+            android:text="왕복"
+            android:textSize="18sp"
+            />
     </RadioGroup>
 
 
@@ -56,7 +63,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="@+id/mainGuidelineVerticalRight"
         app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
-        app:layout_constraintTop_toBottomOf="@id/tripSelectRadioGroup">
+        app:layout_constraintTop_toBottomOf="@id/radioGroupTripSelect">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/departureStationSelectGroupCl"
@@ -122,7 +129,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="0dp"
                 android:layout_marginTop="0dp"
-                android:text="@string/departure_station"
+                android:text="@string/arrival_station"
                 android:textColor="@color/black"
                 android:textSize="36sp"
                 style="@style/StationSelectButtonStyle"
@@ -141,22 +148,22 @@
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
-        android:text="출발 날짜 선택"
+        android:text="가는날 선택"
         android:textColor="#000000"
         android:textSize="18sp"
         style="@style/StationSelectButtonStyle"
         app:layout_constraintEnd_toEndOf="@+id/mainGuidelineVerticalRight"
         app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
         app:layout_constraintTop_toBottomOf="@+id/stationSelectLinearLayout"
-        app:layout_constraintBottom_toTopOf="@+id/btnOpenArrivalCalendar"
+        app:layout_constraintBottom_toTopOf="@+id/btnOpenReturnCalendar"
         />
 
     <Button
-        android:id="@+id/btnOpenArrivalCalendar"
+        android:id="@+id/btnOpenReturnCalendar"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
-        android:text="도착 날짜 선택"
+        android:text="오는날 선택"
         android:textSize="18sp"
         android:textColor="#000000"
         style="@style/StationSelectButtonStyle"
@@ -173,7 +180,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="@+id/mainGuidelineVerticalRight"
         app:layout_constraintStart_toStartOf="@+id/mainGuidelineVerticalLeft"
-        app:layout_constraintTop_toBottomOf="@+id/btnOpenArrivalCalendar">
+        app:layout_constraintTop_toBottomOf="@+id/btnOpenReturnCalendar">
 
         <LinearLayout
             android:id="@+id/llAdultAgeCountWrap"
@@ -302,14 +309,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.05" />
+        app:layout_constraintGuide_begin="20dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/mainGuidelineVerticalRight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.95" />
+        app:layout_constraintGuide_end="20dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/mainGuidelineVerticalCenter"

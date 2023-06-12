@@ -26,5 +26,6 @@
         <activity android:name=".StationSelectActivity"/>
         <activity android:name=".DepartureCalendarActivity"/>
         <activity android:name=".ArrivalCalendarActivity"/>
+        <activity android:name="TrainScheduleActivity"/>
     </application>
 </manifest>

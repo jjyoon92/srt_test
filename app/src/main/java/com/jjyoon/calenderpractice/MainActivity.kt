@@ -1,22 +1,22 @@
 package com.jjyoon.calenderpractice
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.Button
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.jjyoon.calenderpractice.services.ApiResponse
-import com.jjyoon.calenderpractice.services.SearchTrainApiService
-import okhttp3.MediaType
+import com.jjyoon.calenderpractice.services.SearchTrainScheduleApiService
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -25,30 +25,33 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.util.*
 import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity(), OnClickListener {
+    private lateinit var tripSelectRadioGroup: RadioGroup
+    private lateinit var radioButtonOnewayTrip: RadioButton
+    private lateinit var radioButtonRoundTrip: RadioButton
+
     private lateinit var btnDepartureOpenCalendar: Button
+    private lateinit var btnDepartureOpenCalendarDate: String
     private lateinit var btnDepartureOpenCalendarText: String
-    private lateinit var btnArrivalOpenCalendar: Button
-    private lateinit var btnArrivalOpenCalendarText: String
+    private lateinit var btnReturnOpenCalendar: Button
+    private lateinit var btnReturnOpenCalendarDate: String
+    private lateinit var btnReturnOpenCalendarText: String
     private lateinit var btnDepartureStationSelect: Button
     private lateinit var btnDepartureStationSelectText: String
     private lateinit var btnArrivalStationSelect: Button
     private lateinit var btnArrivalStationSelectText: String
     private lateinit var selectedDate: String
     private var selectedDepartureTimeStamp by Delegates.notNull<Long>()
-    private var selectedArrivalTimeStamp by Delegates.notNull<Long>()
+    private var selectedReturnTimeStamp by Delegates.notNull<Long>()
     private var selectedDepartureTime: Int = 0
-    private var selectedArrivalTime: Int = 0
+    private var selectedReturnTime: Int = 0
 
     private val dateFormat: SimpleDateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
     private lateinit var departureDate: String
-    private lateinit var arrivalDate: String
+    private lateinit var returnDate: String
 
     private lateinit var btnAdultMinus: Button
     private lateinit var btnAdultPlus: Button
@@ -62,18 +65,21 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
     private lateinit var btnSearchTrain: Button
 
+//    private lateinit var var
+
     companion object RetrofitBuilder {
-        var trainApiService: SearchTrainApiService
+        var trainApiService: SearchTrainScheduleApiService
 
         init {
             val retrofit = Retrofit.Builder()
 //                .baseUrl("http://172.30.1.23:4000")
 //                .baseUrl("http://192.168.100.77:4000")
-                .baseUrl("http://192.168.100.77:4001")
+//                .baseUrl("http://192.168.100.77:4001") // 학원
+                .baseUrl("http://172.30.1.95:4001") // 집
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
 
-            trainApiService = retrofit.create(SearchTrainApiService::class.java)
+            trainApiService = retrofit.create(SearchTrainScheduleApiService::class.java)
         }
     }
 
@@ -82,13 +88,15 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        
+
         // 표준 함수 4가지
         // apply 자기자신 돌려줌 this
         btnDepartureOpenCalendar = findViewById<Button?>(R.id.btnOpenDepartureCalendar).apply {
             setOnClickListener(this@MainActivity)
         }
         // also 자기자신 돌려줌 this -> it
-        btnArrivalOpenCalendar = findViewById<Button>(R.id.btnOpenArrivalCalendar).also {
+        btnReturnOpenCalendar = findViewById<Button>(R.id.btnOpenReturnCalendar).also {
             it.setOnClickListener(this)
         }
 
@@ -108,14 +116,14 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
         val currentDate = getCurrentDate()
         selectedDepartureTimeStamp = getCurrentTimeStamp()
-        selectedArrivalTimeStamp = getCurrentTimeStamp()
-        btnDepartureOpenCalendarText = currentDate
-        btnArrivalOpenCalendarText = currentDate
+        selectedReturnTimeStamp = getCurrentTimeStamp()
+        btnDepartureOpenCalendarDate = currentDate
+        btnReturnOpenCalendarDate = currentDate
 
-        btnDepartureOpenCalendarText = "출발일 : $btnDepartureOpenCalendarText"
-        btnArrivalOpenCalendarText = "도착일 : $btnArrivalOpenCalendarText"
+        btnDepartureOpenCalendarText = "출발일 : $btnDepartureOpenCalendarDate"
+//        btnArrivalOpenCalendarText = "오는날 : $btnArrivalOpenCalendarDate"
         btnDepartureOpenCalendar.setText(btnDepartureOpenCalendarText)
-        btnArrivalOpenCalendar.setText(btnArrivalOpenCalendarText)
+//        btnArrivalOpenCalendar.setText(btnArrivalOpenCalendarText)
 
         btnDepartureStationSelect.setOnClickListener {
             val stationSelectIntent = Intent(this, StationSelectActivity::class.java).apply {
@@ -191,13 +199,8 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         setupCounterButton(btnChildPlus, btnChildMinus, tvChildCount)
         setupCounterButton(btnOldPlus, btnOldMinus, tvOldCount)
 
-
         btnSearchTrain = findViewById(R.id.btnSearchTrain)
 
-        btnSearchTrain.setOnClickListener {
-            println("열차 조회하기")
-            sendRequestToSearchForTrains()
-        }
 
         // 초기값
         btnDepartureStationSelectText = "동대구"
@@ -205,10 +208,62 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         btnDepartureStationSelect.setText(btnDepartureStationSelectText)
         btnArrivalStationSelect.setText(btnArrivalStationSelectText)
         departureDate = dateFormat.format(getCurrentTimeStamp()).toString()
-        arrivalDate = dateFormat.format(getCurrentTimeStamp()).toString()
+        returnDate = dateFormat.format(getCurrentTimeStamp()).toString()
+
+        // 편도, 왕복 선택
+        tripSelectRadioGroup = findViewById(R.id.radioGroupTripSelect)
+        radioButtonOnewayTrip = findViewById<RadioButton>(R.id.radioButtonOnewayTrip)
+        radioButtonRoundTrip = findViewById<RadioButton>(R.id.radioButtonRoundTrip)
+
+        tripSelectRadioGroup.check(R.id.radioButtonOnewayTrip)
+        btnReturnOpenCalendar.visibility = View.GONE
+//        radioButtonOnewayTrip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+        radioButtonOnewayTrip.setTextColor(Color.RED)
+
+        tripSelectRadioGroup.setOnCheckedChangeListener { radioGroup, checkedId ->
+            when (checkedId) {
+                R.id.radioButtonOnewayTrip -> {
+                    btnReturnOpenCalendar.visibility = View.GONE
+                    radioButtonOnewayTrip.setTextColor(Color.RED)
+                    radioButtonRoundTrip.setTextColor(Color.WHITE)
+                    radioButtonOnewayTrip.setTypeface(null, Typeface.BOLD)
+                    btnDepartureOpenCalendarText = "출발일 : $btnDepartureOpenCalendarDate"
+                    btnDepartureOpenCalendar.setText(btnDepartureOpenCalendarText)
+                }
+
+                R.id.radioButtonRoundTrip -> {
+                    btnReturnOpenCalendar.visibility = View.VISIBLE
+                    radioButtonRoundTrip.setTextColor(Color.RED)
+                    radioButtonOnewayTrip.setTextColor(Color.WHITE)
+//                    radioButtonRoundTrip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+//                    radioButtonOnewayTrip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+                    radioButtonRoundTrip.setTypeface(null, Typeface.BOLD)
+
+                    btnDepartureOpenCalendarText = "가는날 : $btnDepartureOpenCalendarDate"
+                    btnReturnOpenCalendarText = "오는날 : $btnReturnOpenCalendarDate"
+                    btnDepartureOpenCalendar.setText(btnDepartureOpenCalendarText)
+                    btnReturnOpenCalendar.setText(btnReturnOpenCalendarText)
+                    
+                }
+            }
+        }
+
+        // 열차 조회하기
+        btnSearchTrain.setOnClickListener {
+            println("열차 조회하기")
+
+            // 편도, 왕복에 따른 데이터 구분하여 Intent에 데이터 담기
+            if (radioButtonOnewayTrip.isChecked) {
+                intent.putExtra("isRoundTrip", false)
+                sendRequestToOnewayTripSearchForTrains()
+            } else if (radioButtonRoundTrip.isChecked){
+                intent.putExtra("isRoundTrip", true)
+                sendRequestToRoundTripSearchForTrains()
+            }
+        }
     }
 
-
+    // 출발역, 도착역 선택
     private val stationSelectActivityResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode != Activity.RESULT_OK) {
@@ -266,33 +321,33 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             }
             val data = result.data ?: return@registerForActivityResult
 
-            selectedArrivalTimeStamp =
+            selectedReturnTimeStamp =
                 data.getLongExtra(ArrivalCalendarActivity.SELECTED_TIMESTAMP, 0)
             val selectedYear = data.getStringExtra(ArrivalCalendarActivity.SELECTED_YEAR)
             val selectedMonth = data.getStringExtra(ArrivalCalendarActivity.SELECTED_MONTH)
             val selectedDay = data.getStringExtra(ArrivalCalendarActivity.SELECTED_DAY)
             val selectedDayOfWeek = data.getStringExtra(ArrivalCalendarActivity.SELECTED_DAYOFWEEK)
 
-            arrivalDate = dateFormat.format(selectedArrivalTimeStamp).toString()
+            returnDate = dateFormat.format(selectedReturnTimeStamp).toString()
 
-            selectedArrivalTime = data.getIntExtra(ArrivalCalendarActivity.SELECTED_TIME, 0)
+            selectedReturnTime = data.getIntExtra(ArrivalCalendarActivity.SELECTED_TIME, 0)
 
-            println("selectedArrivalTimeStamp : " + selectedArrivalTimeStamp)
-            println("arrivalDate : " + arrivalDate)
-            println("selectedArrivalTime : " + selectedArrivalTime)
+            println("selectedArrivalTimeStamp : " + selectedReturnTimeStamp)
+            println("arrivalDate : " + returnDate)
+            println("selectedArrivalTime : " + selectedReturnTime)
 
-            if (selectedArrivalTime < 10) {
-                btnArrivalOpenCalendarText =
-                    "도착일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) 0${selectedArrivalTime}시 이후"
-                btnArrivalOpenCalendar.text = btnArrivalOpenCalendarText
+            if (selectedReturnTime < 10) {
+                btnReturnOpenCalendarText =
+                    "오는날 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) 0${selectedReturnTime}시 이후"
+                btnReturnOpenCalendar.text = btnReturnOpenCalendarText
             } else {
-                btnArrivalOpenCalendarText =
-                    "도착일 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) ${selectedArrivalTime}시 이후"
-                btnArrivalOpenCalendar.text = btnArrivalOpenCalendarText
+                btnReturnOpenCalendarText =
+                    "오는날 : ${selectedYear}년 ${selectedMonth}월 ${selectedDay}일(${selectedDayOfWeek}) ${selectedReturnTime}시 이후"
+                btnReturnOpenCalendar.text = btnReturnOpenCalendarText
             }
         }
 
-    // BtnDatePicker 날짜, 요일, 시간 초기값 반환
+    // 날짜, 요일, 시간 초기값 반환
     private fun getCurrentDate(): String {
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
@@ -312,7 +367,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         }
 
         selectedDepartureTime = currentTime
-        selectedArrivalTime = currentTime
+        selectedReturnTime = currentTime
 
         return "${date}(${dayOfWeek}) ${time} 이후"
     }
@@ -324,18 +379,12 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id ?: 0) {
-//            R.id.btnDepartureStationSelect -> {
-//                goStationSelectActivity()
-//            }
-//            R.id.btnArrivalStationSelect -> {
-//                goStationSelectActivity()
-//            }
 
             R.id.btnOpenDepartureCalendar -> {
                 goDepartureDateSelectActivity()
             }
 
-            R.id.btnOpenArrivalCalendar -> {
+            R.id.btnOpenReturnCalendar -> {
                 goArrivalDateSelectActivity()
             }
         }
@@ -358,10 +407,10 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     fun goArrivalDateSelectActivity() {
         val arrivalCalendarIntent = Intent(this, ArrivalCalendarActivity::class.java).apply {
             putExtra(
-                ArrivalCalendarActivity.ARRIVAL_DATE, selectedArrivalTimeStamp
+                ArrivalCalendarActivity.ARRIVAL_DATE, selectedReturnTimeStamp
             )
             putExtra(
-                ArrivalCalendarActivity.SELECTED_TIME, selectedArrivalTime
+                ArrivalCalendarActivity.SELECTED_TIME, selectedReturnTime
             )
         }
         arrivalCalendarActivityResult.launch(arrivalCalendarIntent)
@@ -385,21 +434,24 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     }
 
     // 열차 조회 (서버에 요청)
-    fun sendRequestToSearchForTrains() {
+    
+    // 편도 여행 열차 시간표 조회
+    private fun sendRequestToOnewayTripSearchForTrains() {
         val departureStation = btnDepartureStationSelectText
         val arrivalStation = btnArrivalStationSelectText
         val departureDate = departureDate
-        val arrivalDate = arrivalDate
-        val adultCount = tvAdultCount.text.toString().toInt()
-        val childCount = tvChildCount.text.toString().toInt()
-        val oldCount = tvOldCount.text.toString().toInt()
+        val departureTime = selectedDepartureTime
+        val adultCount = tvAdultCount.text
+        val childCount = tvChildCount.text
+        val oldCount = tvOldCount.text
+        
 
         val jsonObject = JSONObject()
         jsonObject.put("departStation", departureStation)
         jsonObject.put("arriveStation", arrivalStation)
         jsonObject.put("departTime", departureDate)
         jsonObject.put("adult", adultCount)
-        jsonObject.put("kid", childCount)
+        jsonObject.put("child", childCount)
         jsonObject.put("old", oldCount)
 
         val requestBody = jsonObject.toString()
@@ -414,36 +466,140 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 //                    println("response.message() : " + response.message())
                     // TODO: 서버 응답에 대한 로직 추가
                     println("요청 성공")
-                    handleTrainResponse(apiResponse)
+                    handleOnewayTrainResponse(apiResponse)
                 } else {
                     // 서버 응답 실패
                     // TODO: 실패에 대한 처리 로직 추가
                     println("요청 실패")
-                    handleTrainError()
+                    handleOnewayTrainError()
                 }
             }
 
             override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
                 // 요청 실패
                 // TODO: 실패에 대한 처리 로직을 추가하세요.
-                handleTrainError()
+                handleOnewayTrainError()
             }
         })
     }
 
-    fun handleTrainResponse(apiResponse: ApiResponse?) {
+    fun handleOnewayTrainResponse(apiResponse: ApiResponse?) {
         // TODO : 서버 응답에 대한 로직 구현
         apiResponse?.let {
-//            val trainData = apiResponse.trainData
-            // TODO : 응답으로 넘어온 데이터를 활용한 작업 수행
-            println(apiResponse)
-            println(apiResponse.result)
-            println("apiResponse.data : " + apiResponse.data)
-//            println(apiResponse.message)
+            val gson = Gson()
+            val dataString = gson.toJson(it.data)
+            val result = it.result
+            val data = it.data
+            println("result : $result" )
+            println("data : $data")
+
+            // 열차 시간 조회 액티비티 시작 & 데이터 전달
+            val intent = Intent(this@MainActivity, TrainScheduleActivity::class.java).apply {
+                putExtra("RESULT", result)
+                putExtra("DATA", dataString)
+                putExtra("departureStation", btnDepartureStationSelectText)
+                putExtra("arrivalStation", btnArrivalStationSelectText)
+                putExtra("departureDate", departureDate)
+                putExtra("departureTime", selectedDepartureTime)
+                putExtra("adultCount", tvAdultCount.text)
+                putExtra("childCount", tvChildCount.text)
+                putExtra("oldCount", tvOldCount.text)
+            }
+
+            startActivity(intent)
         }
     }
 
-    fun handleTrainError() {
+    fun handleOnewayTrainError() {
+        // TODO : 서버 응답 실패 또는 요청 실패에 대한 로직 처리 구현
+        // ex: Error message, 재시도 ...
+    }
+
+    
+    // 왕복 여행 기차 시간표 조회
+    private fun sendRequestToRoundTripSearchForTrains() {
+        val departureStation = btnDepartureStationSelectText
+        val arrivalStation = btnArrivalStationSelectText
+        val departureDate = departureDate
+        val departureTime = selectedDepartureTime
+        val returnDate = returnDate
+        val returnDateTime = selectedReturnTime
+        val adultCount = tvAdultCount.text
+        val childCount = tvChildCount.text
+        val oldCount = tvOldCount.text
+
+//        // 왕복여행인지 여부
+//        val isRoundTrip = returnDate != null
+
+        val jsonObject = JSONObject()
+        jsonObject.put("departStation", departureStation)
+        jsonObject.put("arriveStation", arrivalStation)
+        jsonObject.put("departTime", departureDate)
+        jsonObject.put("adult", adultCount)
+        jsonObject.put("child", childCount)
+        jsonObject.put("old", oldCount)
+
+        val requestBody = jsonObject.toString()
+            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+
+        val call = trainApiService.searchTrain(requestBody)
+        call.enqueue(object : Callback<ApiResponse> {
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.isSuccessful) {
+                    // 서버 응답 처리
+                    val apiResponse = response.body()
+//                    println("response.message() : " + response.message())
+                    // TODO: 서버 응답에 대한 로직 추가
+                    println("요청 성공")
+                    handleRoundTrainResponse(apiResponse)
+                } else {
+                    // 서버 응답 실패
+                    // TODO: 실패에 대한 처리 로직 추가
+                    println("요청 실패")
+                    handleOnewayTrainError()
+                }
+            }
+
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                // 요청 실패
+                // TODO: 실패에 대한 처리 로직을 추가하세요.
+                handleRoundTrainError()
+            }
+        })
+    }
+
+
+
+    fun handleRoundTrainResponse(apiResponse: ApiResponse?) {
+        // TODO : 서버 응답에 대한 로직 구현
+        apiResponse?.let {
+            val gson = Gson()
+            val dataString = gson.toJson(it.data)
+            val result = it.result
+            val data = it.data
+            println("result : $result" )
+            println("data : $data")
+
+            // 열차 시간 조회 액티비티 시작 & 데이터 전달
+            val intent = Intent(this@MainActivity, TrainScheduleActivity::class.java).apply {
+                putExtra("RESULT", result)
+                putExtra("DATA", dataString)
+                putExtra("departureStation", btnDepartureStationSelectText)
+                putExtra("arrivalStation", btnArrivalStationSelectText)
+                putExtra("departureDate", departureDate)
+                putExtra("departureTime", selectedDepartureTime)
+                putExtra("returnDate", returnDate)
+                putExtra("returnTime", selectedReturnTime)
+                putExtra("adultCount", tvAdultCount.text)
+                putExtra("childCount", tvChildCount.text)
+                putExtra("oldCount", tvOldCount.text)
+            }
+
+            startActivity(intent)
+        }
+    }
+
+    fun handleRoundTrainError() {
         // TODO : 서버 응답 실패 또는 요청 실패에 대한 로직 처리 구현
         // ex: Error message, 재시도 ...
     }

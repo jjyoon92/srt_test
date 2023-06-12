@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/trainScheduleDateSelectCl"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="@id/trainScheduleGuidelineVerticalLeft"
+        app:layout_constraintEnd_toEndOf="@+id/trainScheduleGuidelineVerticalRight"
+        android:paddingVertical="5dp"
+        >
+
+        <Button
+            android:id="@+id/btnTrainSchedulePreviousDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="이전 날"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <TextView
+            android:id="@+id/tvTrainScheduleDate"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="06월 12일(월)"
+            android:textSize="24sp"
+            android:textAlignment="center"
+            android:gravity="center"
+            />
+
+        <Button
+            android:id="@+id/btnTrainScheduleNextDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="다음 날"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/trainTimeRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/trainScheduleDateSelectCl"
+        app:layout_constraintStart_toStartOf="@id/trainScheduleGuidelineVerticalLeft"
+        app:layout_constraintEnd_toEndOf="@+id/trainScheduleGuidelineVerticalRight"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="10dp"
+        />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/trainScheduleGuidelineVerticalLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="10dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/trainScheduleGuidelineVerticalRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="10dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/trainScheduleGuidelineVerticalCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
